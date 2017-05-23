@@ -67,8 +67,8 @@ describe Fixnum do
 
     it "stringifies numbers in base 16" do
       expect(5.stringify(16)).to eq("5")
-      expect(10.stringify(16)).to eq("a")
-      expect(42.stringify(16)).to eq("2a")
+      expect(10.stringify(16)).to eq("A")
+      expect(42.stringify(16)).to eq("2A")
     end
   end
 end

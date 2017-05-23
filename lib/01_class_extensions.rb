@@ -18,6 +18,13 @@
 
 class String
   def caesar(shift)
+    self.chars.map do |letter|
+      if (letter.ord + shift) >= 122
+        (letter.ord - 26 + shift).chr
+      else
+        (letter.ord + shift).chr
+      end
+    end.join
   end
 end
 
@@ -36,6 +43,19 @@ end
 
 class Hash
   def difference(other_hash)
+    answer = {}
+    self.each do |k,v|
+      if !other_hash.has_key?(k)
+        answer[k] = v
+      end
+    end
+    other_hash.each do |k,v|
+      if !self.has_key?(k)
+        answer[k] = v
+      end
+    end
+    
+    answer
   end
 end
 
@@ -98,7 +118,61 @@ end
 
 class Fixnum
   def stringify(base)
+    result = ""
+    if base == 10
+      return self.to_s
+    elsif base == 2
+      return base_bin(self)
+    else
+      target = base_bin(self)
+      if target.length <= 4
+        hex_table[target.rjust(4, '0')].to_s
+      else
+        base_hex(target)
+      end
+    end
   end
+
+  #convert input into hex
+  def base_hex(target)
+    prepare_target = target.chars.reverse
+    sliced_target = prepare_target.each_slice(4).to_a
+    processed_target = sliced_target.map {|bin| bin.reverse.join.rjust(4, '0')}
+    processed_target.map {|bin| hex_table[bin]}.reverse.join
+  end
+
+  def hex_table
+    hex_values = {}
+    (0..9).each {|num| hex_values[base_bin(num).to_s.rjust(4, '0')] = num}
+    num = 10
+    ("A".."F").each do |letter| #should be capitol A
+      hex_values[base_bin(num).to_s] = letter
+      num += 1
+    end
+
+    hex_values
+  end
+
+  #used to check if need to get rid of zero
+  def lead_zeros?(string)
+    string.chars[0] == "0" && string.length > 1
+  end
+
+  #convert input into binary
+  def base_bin(num)
+    result = ""
+    base_increment = 1
+    until (num/base_increment) < 1
+      result << ((num/base_increment)%2).to_s
+      base_increment *= 2
+    end
+
+    result = result.reverse
+    return 0 if result == "0"
+    return result.sub!(/^[0]+/,'') if lead_zeros?(result)
+    return result
+  end
+
 end
 
 # Bonus: Refactor your `String#caesar` method to work with strings containing
